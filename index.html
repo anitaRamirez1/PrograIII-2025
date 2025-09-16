@@ -9,9 +9,15 @@
     hola mundo desde python
     <input type="text" name="txtNombre" id="txtNombre">
     <script>
-        documet.addEventListener('DOMContentLoaded', (e) => {
-            console.log('DOM cargado');
-            
+        document.addEventListener('DOMContentLoaded', (e) => {
+            txtNombre.addEventListener('keyup', (e) => {
+                fetch('http://localhost:3000/', {
+                    method: 'POST',
+                    body: txtNombre.value
+                })
+                .then(resp => resp.text())
+                .then(data => console.log(data));
+            });
         });
     </script>
 </body>
