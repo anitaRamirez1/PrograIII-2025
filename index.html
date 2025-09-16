@@ -10,7 +10,13 @@
     <input type="text" name="txtNombre" id="txtNombre">
     <script>
         document.addEventListener('DOMContentLoaded',(e)=>{
-            console.log('DOM cargado');
+            txtNombre.addEventListener('keyup', e=>{
+                fetch('http://localhost:3000/', {
+                    'method': 'POST',
+                    body: txtNombre.value
+                }).then(resp=>resp.text())
+                .then(data=>console.log(data));
+            });
         });
     </script>
 </body>
