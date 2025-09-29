@@ -25,6 +25,6 @@ class crud:
             cursor = self.conexion.cursor()
             cursor.execute(sql, datos)
             self.conexion.commit()
-            return "ok"
+            return cursor.rowcount  # Devuelve el número de filas afectadas
         except Error as e:
             return str(e)

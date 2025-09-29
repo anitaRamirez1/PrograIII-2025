@@ -15,6 +15,14 @@
     <!-- Bootstrap theme -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css"/>
 </head>
+
+ <style>
+        .card.text-bg-dark {
+            background-color: #d63384 !important; /* botones en rosa más oscuro */
+            color: #212529 !important; /* texto oscuro para contraste */
+        }
+    </style>
+
 <body>
     <div class="container-fluid">
         <div class="row">
@@ -78,6 +86,89 @@
                                     </tr>
                                 </thead>
                                 <tbody id="tblAlumnos"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>   
+            </div>
+        </div>
+    </div>
+
+        <div class="row mt-4">
+           <div class="col-12 col-md-6">
+                <form id="frmAdministracionDocentes">
+                    <div class="card text-bg-dark">
+                        <div class="card-header">ADMINISTRACION DE DOCENTES</div>
+                        <div class="card-body">
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">CODIGO</div>
+                                <div class="col-9 col-md-3">
+                                    <input required type="text" id="txtCodigoDocente" name="txtCodigoDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">NOMBRE</div>
+                                <div class="col-9 col-md-4">
+                                    <input required type="text" id="txtNombreDocente" name="txtNombreDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">DIRECCION</div>
+                                <div class="col-9 col-md-8">
+                                    <input required type="text" id="txtDireccionDocente" name="txtDireccionDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">TELEFONO</div>
+                                <div class="col-9 col-md-3">
+                                    <input type="text" id="txtTelefonoDocente" name="txtTelefonoDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">EMAIL</div>
+                                <div class="col-9 col-md-4">
+                                    <input type="email" id="txtEmailDocente" name="txtEmailDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">DUI</div>
+                                <div class="col-9 col-md-4">
+                                    <input required type="text" id="txtDuiDocente" name="txtDuiDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">ESCALAFON</div>
+                                <div class="col-9 col-md-4">
+                                    <input required type="text" id="txtEscalafonDocente" name="txtEscalafonDocente" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <input type="submit" id="btnGuardarDocente" name="btnGuardarDocente" class="btn btn-primary" value="GUARDAR" />
+                            <input type="reset" id="btnNuevoDocente" name="btnNuevoDocente" class="btn btn-warning" value="NUEVO" />
+                        </div>
+                    </div>
+                </form>   
+            </div>
+            <div class="col-12 col-md-6">
+                <form id="frmBusquedaDocentes">
+                    <div class="card text-bg-dark">
+                        <div class="card-header">BUSQUEDA DE DOCENTES</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>CODIGO</th>
+                                        <th>NOMBRE</th>
+                                        <th>DIRECCION</th>
+                                        <th>TELEFONO</th>
+                                        <th>EMAIL</th>
+                                        <th>DUI</th>
+                                        <th>ESCALAFON</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblDocentes"></tbody>
                             </table>
                         </div>
                     </div>
@@ -171,5 +262,99 @@
             }
         }
     </script>
+
+
+ <script>
+        //Tarea: Realizar el CRUD de docentes... 
+        //codigo, nombre, direccion, telefono, email, dui, escalafon
+        var accion = "nuevo",
+            idDocente = 0;
+        document.addEventListener("DOMContentLoaded", event=>{ 
+            frmDocentes.addEventListener("submit",e=>{
+                e.preventDefault();
+
+                guardarDocentes();
+            });
+            obtenerDocentes();
+        });
+        async function guardarDocentes(){
+            let datos = {
+                accion,
+                idDocente,
+                codigo: txtCodigoDocente.value,
+                nombre: txtNombreDocente.value,
+                direccion: txtDireccionDocente.value,
+                telefono: txtTelefonoDocente.value,
+                email: txtEmailDocente.value,
+                dui: txtDuiDocente.value,
+                escalafon: txtEscalafonDocente.value
+            };
+            let response = await fetch("/docente",{
+                method: "POST",
+                body: JSON.stringify(datos),
+            }), 
+                respuesta = await response.json();
+            if(respuesta.msg!="ok"){
+                alertify.error(`Error al procesar docente: ${respuesta}`);
+                return;
+            }
+            limpiarFormulario();
+            obtenerDocentes();
+        }
+        function limpiarFormulario(){
+            accion = "nuevo";
+            idDocente = 0;
+            txtCodigoDocente.value = "";
+            txtNombreDocente.value = "";
+            txtDireccionDocente.value = "";
+            txtTelefonoDocente.value = "";
+            txtEmailDocente.value = "";
+            txtDuiDocente.value = "";
+            txtEscalafonDocente.value = "";
+        }
+        async function obtenerDocentes(){
+            let response = await fetch("/docentes"), 
+                respuesta = await response.json();
+            mostrarDatosDocentes(respuesta);
+        }
+        function mostrarDatosDocentes(docentes){
+            let filas = "";
+            docentes.forEach(docente=>{
+                filas += `
+                    <tr onClick='mostrarDocente(${ JSON.stringify(docente) })'>
+                        <td>${docente.codigo}</td>
+                        <td>${docente.nombre}</td>
+                        <td>${docente.direccion}</td>
+                        <td>${docente.telefono}</td>
+                        <td>${docente.email}</td>
+                        <td>${docente.dui}</td>
+                        <td>${docente.escalafon}</td>
+                        <td><button onClick='eliminarDocente(${ JSON.stringify(docente) })' class="btn btn-danger btn-sm">ELIMINAR</button></td>
+                    </tr>
+                `;
+            });
+            tblDocentes.innerHTML = filas;
+        }
+        function mostrarDocente(docente){
+            accion = "modificar";
+            idDocente = docente.idDocente;
+            txtCodigoDocente.value = docente.codigo;
+            txtNombreDocente.value = docente.nombre;
+            txtDireccionDocente.value = docente.direccion;
+            txtTelefonoDocente.value = docente.telefono;
+            txtEmailDocente.value = docente.email;
+            txtDuiDocente.value = docente.dui;
+            txtEscalafonDocente.value = docente.escalafon;
+        }
+        function eliminarDocente(docente){
+            if(confirm(`Esta seguro de eliminar a ${docente.nombre}`)){
+                idDocente = docente.idDocente;
+                accion = "eliminar";
+                guardarDocentes();
+            }
+        }
+    </script>
+
+
 </body>
 </html>
