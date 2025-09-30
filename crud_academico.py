@@ -18,13 +18,19 @@ class crud:
     def consultar(self, sql):
         cursor = self.conexion.cursor(dictionary=True)
         cursor.execute(sql)
-        return cursor.fetchall()
+        resultados = cursor.fetchall()
+        cursor.close()
+        return resultados
     
     def ejecutar(self, sql, datos):
         try:
             cursor = self.conexion.cursor()
+            print("Ejecutando SQL:", sql)          # Debug: muestra la consulta
+            print("Con datos:", datos)              # Debug: muestra los valores
             cursor.execute(sql, datos)
             self.conexion.commit()
+            cursor.close()
             return "ok"
         except Error as e:
+            print("Error en la consulta:", e)      # Debug: muestra el error
             return str(e)
