@@ -41,9 +41,9 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <input type="submit" id="btnGuardarAlumno" name="btnGuardarAlumno" class="btn btn-primary" value="GUARDAR" />
-            <input type="reset" id="btnNuevoAlumno" name="btnNuevoAlumno" class="btn btn-warning" value="NUEVO" />
-            <input type="button" id="btnBuscarAlumno" name="btnBuscarAlumno" class="btn btn-info" value="BUSCAR" />
+            <input type="submit" id="btnGuardarAlumno" name="btnGuardarAlumno" class="btn btn-outline-primary" value="GUARDAR" />
+            <input type="reset" id="btnNuevoAlumno" name="btnNuevoAlumno" class="btn btn-outline-warning" value="NUEVO" />
+            <input type="button" id="btnBuscarAlumno" name="btnBuscarAlumno" class="btn btn-outline-info" value="BUSCAR" />
         </div>
     </div>
 </form>
@@ -94,6 +94,7 @@
         txtDireccionAlumno.value = alumno.direccion;
         txtTelefonoAlumno.value = alumno.telefono;
         txtEmailAlumno.value = alumno.email;
+        alertify.success(`Alumno ${alumno.nombre} cargado para editar`);
     }
     btnBuscarAlumno.addEventListener("click", e=>{
         e.preventDefault();
