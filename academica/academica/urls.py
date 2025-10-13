@@ -23,4 +23,6 @@ urlpatterns = [
     path('edad/<int:edad>/', miEdad),
     path('saludo/<str:nombre>/', saludoNombre),
     path('', index),
+    path('<str:nombre>', index),
+    path('<str:nombre>/<int:edad>', index),
 ]

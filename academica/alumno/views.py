@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.template import loader
 
 # Create your views here.
 def holaMundo(request):
@@ -12,6 +11,5 @@ def miEdad(request, edad):
 def saludoNombre(request, nombre):
     return HttpResponse(f"Hola {nombre}, bienvenido a la UGB")
 
-def index(request):
-    template = loader.get_template('index.html')
-    return HttpResponse(template.render())
+def index(request, nombre='invitado', edad=0):
+    return render(request, 'index.html', {'nombre': nombre, 'edad': edad})
