@@ -3,10 +3,18 @@ from urllib import parse
 from urllib.parse import urlparse, parse_qs
 import json 
 import crud_alumno
+import crud_usuario
 
 port = 3000
 
 crudAlumno = crud_alumno.crud_alumno()
+crudUsuario = crud_usuario.crud_usuario()
+
+from flask import Flask, send_file
+import os
+
+app = Flask(__name__)
+
 
 class miServidor(SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -22,7 +30,14 @@ class miServidor(SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(json.dumps(alumnos).encode('utf-8'))
-        if path=="/vistas":
+            return
+        elif path=="/usuario":
+            usuario = crudUsuario.consultar("")
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(json.dumps(usuario).encode('utf-8'))
+            return
+        elif path=="/vistas":
             self.path = '/modulos/'+ parametros['form'][0] +'.html'
             return SimpleHTTPRequestHandler.do_GET(self)
     
@@ -37,6 +52,15 @@ class miServidor(SimpleHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         self.wfile.write(json.dumps(resp).encode("utf-8"))
+        
+        return
+    
+@app.route('/')
+def home():
+
+    return send_file(os.path.join(os.path.dirname(__file__), 'login.html'))
+if __name__ == '__main__':
+    app.run(debug=True) 
 
 print("Servidor ejecutandose en el puerto", port)
 server = HTTPServer(("localhost", port), miServidor)

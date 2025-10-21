@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema Académico</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .btn-custom {
+            background-color: #69d633;
+            border-color: #69d633;
+        }
+        .btn-custom:hover {
+            background-color: #5cb85c;
+            border-color: #5cb85c;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="text-center mb-4">Iniciar Sesión</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-custom w-100">Ingresar</button>
+        </form>
+        <div id="errorMessage" class="text-danger text-center mt-3" style="display: none;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const username = $('#username').val();
+                const password = $('#password').val();
+                
+                // Verificación básica (hardcoded para demostración)
+                if (username === 'admin' && password === '1234') {
+                    // Redirigir a index.html (ajusta la ruta si es necesario)
+                    window.location.href = 'index.html';
+                } else {
+                    $('#errorMessage').text('Usuario o contraseña incorrectos.').show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
