@@ -1,0 +1,57 @@
+<form id="frmBusquedaMaterias">
+    <div class="card text-bg-dark">
+        <div class="card-header">
+            <div class="d-flex">
+                BUSQUEDA DE MATERIAS
+                <div class="ms-auto">
+                    <button data-form="busqueda_materias" type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover table-dark table-striped text-white">
+                <thead>
+                    <tr>
+                        <th>CODIGO</th>
+                        <th>NOMBRE</th>
+                        <th>UV</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tblMaterias"></tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script>
+    obtenerMaterias();
+    async function obtenerMaterias(){
+        let response = await fetch("consultar_materias/"), 
+            respuesta = await response.json();
+        mostrarDatosMaterias(respuesta);
+    }
+    function mostrarDatosMaterias(materias){
+        let filas = "";
+        materias.forEach(materia=>{
+            filas += `
+                <tr onClick='mostrarMateria(${ JSON.stringify(materia) })'>
+                    <td>${materia.codigo}</td>
+                    <td>${materia.nombre}</td>
+                    <td>${materia.uv}</td>
+                    <td><button onClick='eliminarMateria(${ JSON.stringify(materia) }, event)' class="btn btn-outline-danger btn-sm">ELIMINAR</button></td>
+                </tr>
+            `;
+        });
+        tblMaterias.innerHTML = filas;
+    }
+    function eliminarMateria(materia, event){
+        event.preventDefault();
+
+        if(confirm(`Esta seguro de eliminar a ${materia.nombre}`)){
+            idMateria = materia.id;
+            accion = "eliminar";
+            guardarMaterias();
+            alertify.success('Materia eliminado correctamente');
+        }
+    }
+</script>

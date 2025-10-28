@@ -7,3 +7,8 @@ class alumno(models.Model):
     direccion = models.CharField(max_length=150)
     telefono = models.CharField(max_length=10)
     email = models.CharField(max_length=75)
+
+class materia(models.Model):
+    codigo = models.CharField(max_length=10)
+    nombre = models.CharField(max_length=100)
+    uv = models.IntegerField()
