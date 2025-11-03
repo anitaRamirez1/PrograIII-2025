@@ -1,0 +1,122 @@
+<form id="frmDocentes">
+    <div class="card text-bg-dark" style="min-width: 700px;">
+        <div class="card-header">
+            <div class="d-flex">
+                ADMINISTRACION DE DOCENTES
+                <div class="ms-auto">
+                    <button data-form="docentes" type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row p-1">
+                <div class="col-3 col-md-2">CODIGO</div>
+                <div class="col-9 col-md-3">
+                    <input required type="text" id="txtCodigoDocente" name="txtCodigoDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">NOMBRE</div>
+                <div class="col-9 col-md-4">
+                    <input required type="text" id="txtNombreDocente" name="txtNombreDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">DIRECCION</div>
+                <div class="col-9 col-md-8">
+                    <input required type="text" id="txtDireccionDocente" name="txtDireccionDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">TELEFONO</div>
+                <div class="col-9 col-md-3">
+                    <input type="text" id="txtTelefonoDocente" name="txtTelefonoDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-3 col-md-2">EMAIL</div>
+                <div class="col-9 col-md-4">
+                    <input type="email" id="txtEmailDocente" name="txtEmailDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+                        <div class="row p-1">
+                <div class="col-3 col-md-2">DUI</div>
+                <div class="col-9 col-md-4">
+                    <input type="text" id="txtDuiDocente" name="txtDuiDocente" class="form-control form-control-sm" />
+                </div>
+            </div>
+            </div>
+                        <div class="row p-1">
+                <div class="col-3 col-md-2">ESCALAFON</div>
+                <div class="col-9 col-md-4">
+                    <input type="text" id="txtEscalafonDocente" name="txtEscalafonDocente" class="form-control form-control-sm" />
+                </div>
+             </div>
+        <div class="card-footer text-center">
+            <input type="submit" id="btnGuardarDocente" name="btnGuardarDocente" class="btn btn-outline-primary" value="GUARDAR" />
+            <input type="reset" id="btnNuevoDocente" name="btnNuevoDocente" class="btn btn-outline-warning" value="NUEVO" />
+            <input type="button" id="btnBuscarDocente" name="btnBuscarDocente" class="btn btn-outline-info" value="BUSCAR" />
+        </div>
+    </div>
+</form>
+<script>
+    var accion = "nuevo",
+        idDocente = 0;
+    
+    frmDocentes.addEventListener("submit",e=>{
+        e.preventDefault();
+        guardardocentes();
+    });
+    async function guardardocentes(){
+        let datos = {
+            accion,
+            idDocente,
+            codigo: txtCodigoDocente.value,
+            nombre: txtNombreDocente.value,
+            direccion: txtDireccionDocente.value,
+            telefono: txtTelefonoDocente.value,
+            email: txtEmailDocente.value,
+            dui: txtDuiDocente.value,
+            escalafon: txtEscalafonDocente.value
+        };
+        let response = await fetch("guardar_docentes/",{
+            method: "POST",
+            body: JSON.stringify(datos),
+        }), 
+            respuesta = await response.json();
+        if(respuesta.msg!="ok"){
+            alertify.error(`Error al procesar docente: ${respuesta}`);
+            return;
+        }
+        limpiarDocente();
+        obtenerDocentes();
+    }
+    function limpiarDocente(){
+        accion = "nuevo";
+        idDocente = 0;
+        txtCodigoDocente.value = "";
+        txtNombreDocente.value = "";
+        txtDireccionDocente.value = "";
+        txtTelefonoDocente.value = "";
+        txtEmailDocente.value = "";
+        txtDuiDocente.value = "";
+        txtEscalafonDocente.value = "";
+
+    }
+    function mostrarDocente(docente){
+        accion = "modificar";
+        idDocente = docente.id;
+        txtCodigoDocente.value = docente.codigo;
+        txtNombreDocente.value = docente.nombre;
+        txtDireccionDocente.value = docente.direccion;
+        txtTelefonoDocente.value = docente.telefono;
+        txtEmailDocente.value = docente.email;
+        txtDuiDocente.value = docente.dui;
+        txtEscalafonDocente.value = docente.escalafon;
+        alertify.success(`Docente ${docente.nombre} cargado para editar`);
+    }
+    btnBuscarDocente.addEventListener("click", e=>{
+        e.preventDefault();
+        abrirVentana('busqueda_docentes');
+    });
+</script>

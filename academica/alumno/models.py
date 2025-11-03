@@ -12,3 +12,12 @@ class materia(models.Model):
     codigo = models.CharField(max_length=10)
     nombre = models.CharField(max_length=100)
     uv = models.IntegerField()
+    
+class docente(models.Model):
+    codigo = models.CharField(max_length=10)
+    nombre = models.CharField(max_length=100)
+    direccion = models.CharField(max_length=150)
+    telefono = models.CharField(max_length=10)
+    email = models.CharField(max_length=75)
+    dui = models.CharField(max_length=10)
+    escalafon = models.CharField(max_length=50)

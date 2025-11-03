@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-from .models import alumno, materia
+from .models import alumno, docente, materia
 
 # Create your views here.
 def holaMundo(request):
@@ -28,8 +28,13 @@ def consultar_materias(request):
     materias = list(materia.objects.values())
     return JsonResponse(materias, safe=False)
 
+def consultar_docentes(request):
+    docentes = list(docente.objects.values())
+    return JsonResponse(docentes, safe=False)
+
 @csrf_exempt
 def guardar_alumnos(request):
+    
     if request.method == "POST":
         data  = json.loads(request.body)
         if( data.get("accion")=="nuevo" ):
@@ -79,5 +84,43 @@ def guardar_materias(request):
             editMateria.delete()
 
         return JsonResponse({'msg': 'ok', 'id': editMateria.id})
+    else:
+        return JsonResponse({'msg': 'Metodo no permitido'})
+    
+    
+@csrf_exempt
+
+def guardar_docentes(request):
+    
+    if request.method == "POST":
+        data  = json.loads(request.body)
+        if( data.get("accion")=="nuevo" ):
+            editDocente = docente.objects.create(
+                codigo = data.get("codigo"),
+                nombre = data.get("nombre"),
+                direccion = data.get("direccion"),
+                telefono = data.get("telefono"),
+                email = data.get("email"),
+                dui = data.get("dui"),
+                escalafon = data.get("escalafon")
+
+            )
+        elif( data.get("accion")=="modificar" ):
+            editDocente = docente.objects.get(id=data.get("idDocente"))
+            editDocente.codigo = data.get("codigo")
+            editDocente.nombre = data.get("nombre")
+            editDocente.direccion = data.get("direccion")
+            editDocente.telefono = data.get("telefono")
+            editDocente.email = data.get("email")
+            editDocente.dui = data.get("dui")
+            editDocente.escalafon = data.get("escalafon")
+            
+            editDocente.save()
+
+        elif( data.get("accion")=="eliminar" ):
+            editDocente = docente.objects.get(id=data.get("idDocente"))
+            editDocente.delete()
+
+        return JsonResponse({'msg': 'ok', 'idDocente': editDocente.id})
     else:
         return JsonResponse({'msg': 'Metodo no permitido'})
