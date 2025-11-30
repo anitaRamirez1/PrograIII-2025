@@ -1,27 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD - Academico - Python</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
-       crossorigin="anonymous" referrerpolicy="no-referrer" />
-       <!-- CSS -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css" />
     <!-- Default theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css" />
     <!-- Semantic UI theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/semantic.min.css" />
     <!-- Bootstrap theme -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/bootstrap.min.css" />
 </head>
-
- <style>
-        .card.text-bg-dark {
-            background-color: #69d633 !important; 
-            color: #212529 !important; /* texto oscuro para contraste */
-        }
-    </style>
 
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -29,67 +23,60 @@
             <a class="navbar-brand" href="#">::.. SISTEMA ACADEMICO ..::</a>
             <div class="collapse navbar-collapse" id="mnxAcademica">
                 <div class="navbar-nav">
-                    <a class="nav-link" href="#" data-form="alumnos">Alumnos</a>
-                    <a class="nav-link" href="#" data-form="usuarios">Usuario</a>
-                    <a class="nav-link" href="#" data-form="materias">Materias</a>
-                    <a class="nav-link" href="#" data-form="docentes">Docentes</a>
 
-                    <a class="nav-link" href="#" data-form="notas">Notas</a>
                 </div>
             </div>
         </div>
     </nav>
     <div class="container-fluid">
-        <div class="position-absolute" id="alumnos"></div>
-        <div class="position-absolute" id="busqueda_alumnos"></div>
-        <div class="position-absolute" id="notas"></div>
-        <div class="position-absolute" id="materias"></div>
-        <div class="position-absolute" id="busqueda_materias"></div>
-        <div class="position-absolute" id="docentes"></div>
-        <div class="position-absolute" id="busqueda_docentes"></div>
-        <div class="position-absolute" id="usuario"></div>
-        <div class="position-absolute" id="busqueda_usuario"></div>
-        <div class="position-absolute" id="busqueda_notas"></div>
+        <div class="position-absolute" id="conversor_grados">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Conversor de Grados</h3>
+                </div>
+                <div class="card-body">
+                    <form id="frmConversor">
+                        <div class="mb-3">
+                            <label for="txtGradosCelsius" class="form-label">Celsius</label>
+                            <input type="number" class="form-control" id="txtGradosCelsius" required>
+                        </div>
+                        <div class="mb-3">
+                            <h3><span id="lblGradosFahrenheit" class="badge text-bg-light">Fahrenheit: 0</span></h3>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Convertir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js" integrity="sha512-MSOo1aY+3pXCOCdGAYoBZ6YGI0aragoQsg1mKKBHXCYPIWxamwOE7Drh+N5CPgGI5SA9IEKJiPjdfqWFWmZtRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"
+        integrity="sha512-MSOo1aY+3pXCOCdGAYoBZ6YGI0aragoQsg1mKKBHXCYPIWxamwOE7Drh+N5CPgGI5SA9IEKJiPjdfqWFWmZtRA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", event => {
-    const mnxAcademica = document.getElementById('mnxAcademica');
-    mnxAcademica.addEventListener('click', e => {
-        e.preventDefault();
-        let form = e.target.dataset.form;
-        if (form) {
-            abrirVentana(form);
-        }
-    });
-});
-async function abrirVentana(form, callback) {
-    // Verifica si el elemento existe antes de continuar
-    if (document.getElementById(form)) {
-        if ($(`#${form} > form`).length === 0) {
-            try {
-                const response = await fetch(`/vistas?form=${form}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const ventana = await response.text();
-                $(`#${form}`).html(ventana).draggable();
-                if (callback) callback();
-            } catch (error) {
-                alertify.error('Error al cargar el formulario: ' + error.message);
-                console.error('Error al cargar el formulario:', error);
-            }
-        }
-        $(`#${form}`).show();
-    } else {
-        alertify.error(`No existe el elemento con id '${form}' en el DOM.`);
-        console.error(`No existe el elemento con id '${form}' en el DOM.`);
-    }
-
-}</script>
+            frmConversor.addEventListener('submit', async e => {
+                e.preventDefault();
+                let datos = {
+                    celsius: txtGradosCelsius.value
+                };
+                let respuesta = await fetch('http://localhost:3000', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                }),
+                    resp = await respuesta.json();
+                lblGradosFahrenheit.innerHTML = `Fahrenheit: ${resp.grados}`;
+            })
+        });
+    </script>
 </body>
+
+</html>
