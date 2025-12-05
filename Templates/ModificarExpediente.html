@@ -1,0 +1,414 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Modificar Expediente{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .container-expediente {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .titulo-principal {
+        text-align: center;
+        color: #2e7d32;
+        font-size: 2.2em;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .subtitulo {
+        text-align: center;
+        color: #689f38;
+        font-size: 1.1em;
+        margin-bottom: 30px;
+    }
+
+    .formulario-expediente {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        border-top: 5px solid #fdd835;
+    }
+
+    .seccion-form {
+        margin-bottom: 35px;
+    }
+
+    .seccion-titulo {
+        color: #2e7d32;
+        font-size: 1.3em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8f5e9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .grid-dos-columnas {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .campo-form {
+        margin-bottom: 0;
+    }
+
+    .campo-form label {
+        display: block;
+        font-weight: 600;
+        color: #2e7d32;
+        margin-bottom: 8px;
+        font-size: 0.95em;
+    }
+
+    .campo-form label .icono {
+        margin-right: 6px;
+    }
+
+    .campo-form label .requerido {
+        color: #e53935;
+        font-size: 1.1em;
+    }
+
+    .campo-form input,
+    .campo-form textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 0.95em;
+        font-family: 'Segoe UI', sans-serif;
+        transition: all 0.3s ease;
+        background-color: #fafafa;
+        box-sizing: border-box;
+    }
+
+    .campo-form input:focus,
+    .campo-form textarea:focus {
+        outline: none;
+        border-color: #fdd835;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(253, 216, 53, 0.1);
+    }
+
+    .campo-form textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Sección de Imagen */
+    .seccion-imagen {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        border: 2px dashed #fdd835;
+    }
+
+    .imagen-actual {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .imagen-actual img {
+        max-width: 300px;
+        max-height: 300px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        border: 4px solid #fdd835;
+    }
+
+    .imagen-actual p {
+        margin-top: 15px;
+        color: #f57f17;
+        font-weight: 600;
+    }
+
+    .zona-subida {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .input-file-custom {
+        display: none;
+    }
+
+    .btn-subir-archivo {
+        display: inline-block;
+        background: linear-gradient(135deg, #fdd835 0%, #f9a825 100%);
+        color: #000;
+        padding: 14px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(253, 216, 53, 0.3);
+    }
+
+    .btn-subir-archivo:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(253, 216, 53, 0.4);
+    }
+
+    .foto-preview {
+        margin-top: 15px;
+        font-size: 0.95em;
+        color: #555;
+        font-weight: 500;
+    }
+
+    /* Botones de Acción */
+    .acciones-form {
+        display: flex;
+        gap: 15px;
+        margin-top: 40px;
+        justify-content: center;
+    }
+
+    .btn-form {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.05em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, #fdd835 0%, #f9a825 100%);
+        color: #000;
+        flex: 1;
+        max-width: 250px;
+    }
+
+    .btn-guardar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(253, 216, 53, 0.4);
+    }
+
+    .btn-cancelar {
+        background: linear-gradient(135deg, #757575 0%, #616161 100%);
+        color: white;
+        flex: 1;
+        max-width: 250px;
+    }
+
+    .btn-cancelar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(117, 117, 117, 0.4);
+    }
+
+    /* Indicador de campos modificados */
+    .nota-modificacion {
+        background: #e3f2fd;
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        border-left: 4px solid #2196f3;
+        font-size: 0.9em;
+        color: #0d47a1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .grid-dos-columnas {
+            grid-template-columns: 1fr;
+        }
+
+        .formulario-expediente {
+            padding: 25px;
+        }
+
+        .acciones-form {
+            flex-direction: column;
+        }
+
+        .btn-form {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container-expediente">
+    <h1 class="titulo-principal">✏️ Modificar Expediente</h1>
+    <p class="subtitulo">Actualiza la información del paciente: {{ expediente.nombres }} {{ expediente.apellidos }}</p>
+
+    <form method="POST" action="{{ url_for('actualizar_expediente', id=expediente.id) }}" enctype="multipart/form-data" class="formulario-expediente">
+        
+        <!-- Nota informativa -->
+        <div class="nota-modificacion">
+            ℹ️ <strong>Nota:</strong> Solo modifica los campos que necesites actualizar. Los campos vacíos mantendrán su valor actual.
+        </div>
+
+        <!-- Sección: Datos Personales -->
+        <div class="seccion-form">
+            <h3 class="seccion-titulo">
+                <span>👤</span>
+                Datos Personales
+            </h3>
+            
+            <div class="grid-dos-columnas">
+                <div class="campo-form">
+                    <label for="nombres">
+                        <span class="icono">✏️</span>
+                        Nombres <span class="requerido">*</span>
+                    </label>
+                    <input type="text" name="nombres" id="nombres" value="{{ expediente.nombres }}" required>
+                </div>
+
+                <div class="campo-form">
+                    <label for="apellidos">
+                        <span class="icono">✏️</span>
+                        Apellidos <span class="requerido">*</span>
+                    </label>
+                    <input type="text" name="apellidos" id="apellidos" value="{{ expediente.apellidos }}" required>
+                </div>
+            </div>
+
+            <div class="grid-dos-columnas">
+                <div class="campo-form">
+                    <label for="edad">
+                        <span class="icono">🎂</span>
+                        Edad
+                    </label>
+                    <input type="number" name="edad" id="edad" value="{{ expediente.edad if expediente.edad else '' }}" min="0" max="150">
+                </div>
+
+                <div class="campo-form">
+                    <label for="telefono">
+                        <span class="icono">📱</span>
+                        Teléfono
+                    </label>
+                    <input type="text" name="telefono" id="telefono" value="{{ expediente.telefono if expediente.telefono else '' }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Información de Contacto -->
+        <div class="seccion-form">
+            <h3 class="seccion-titulo">
+                <span>📬</span>
+                Información de Contacto
+            </h3>
+
+            <div class="campo-form">
+                <label for="correo">
+                    <span class="icono">📧</span>
+                    Correo Electrónico
+                </label>
+                <input type="email" name="correo" id="correo" value="{{ expediente.correo if expediente.correo else '' }}">
+            </div>
+
+            <div class="campo-form" style="margin-top: 25px;">
+                <label for="direccion">
+                    <span class="icono">🏠</span>
+                    Dirección
+                </label>
+                <input type="text" name="direccion" id="direccion" value="{{ expediente.direccion if expediente.direccion else '' }}">
+            </div>
+        </div>
+
+        <!-- Sección: Información Médica -->
+        <div class="seccion-form">
+            <h3 class="seccion-titulo">
+                <span>🏥</span>
+                Información Médica
+            </h3>
+
+            <div class="campo-form">
+                <label for="enfermedad">
+                    <span class="icono">🩺</span>
+                    Diagnóstico / Enfermedad
+                </label>
+                <textarea name="enfermedad" id="enfermedad">{{ expediente.enfermedad if expediente.enfermedad else '' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Sección: Imagen del Paciente -->
+        <div class="seccion-imagen">
+            <h3 class="seccion-titulo" style="border: none; padding: 0;">
+                <span>📷</span>
+                Imagen Médica / Diagnóstico
+            </h3>
+            
+            {% if expediente.imagen %}
+            <div class="imagen-actual">
+                <img src="{{ url_for('static', filename='uploads/' ~ expediente.imagen) }}" alt="Imagen actual">
+                <p>✅ Imagen actual del expediente</p>
+            </div>
+            {% endif %}
+            
+            <div class="zona-subida">
+                <input type="file" name="imagen" id="imagenInput" class="input-file-custom" accept="image/*">
+                <label for="imagenInput" class="btn-subir-archivo">
+                    📤 {% if expediente.imagen %}Cambiar Imagen{% else %}Seleccionar Imagen{% endif %}
+                </label>
+                <div class="foto-preview" id="fotoPreview">
+                    {% if expediente.imagen %}
+                    📁 {{ expediente.imagen }}
+                    {% else %}
+                    📁 Sin imagen seleccionada
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="acciones-form">
+            <button type="submit" class="btn-form btn-guardar">
+                <span>💾</span>
+                Guardar Cambios
+            </button>
+            <button type="button" class="btn-form btn-cancelar" onclick="confirmarCancelacion()">
+                <span>❌</span>
+                Cancelar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const imagenInput = document.getElementById('imagenInput');
+    const fotoPreview = document.getElementById('fotoPreview');
+
+    imagenInput.addEventListener('change', function () {
+        if (imagenInput.files.length > 0) {
+            const archivo = imagenInput.files[0];
+            fotoPreview.innerHTML = '✅ ' + archivo.name;
+        } else {
+            fotoPreview.innerHTML = '{% if expediente.imagen %}📁 {{ expediente.imagen }}{% else %}📁 Sin imagen seleccionada{% endif %}';
+        }
+    });
+
+    function confirmarCancelacion() {
+        const confirmar = confirm("¿Estás seguro de que deseas cancelar?\n\nLos cambios no guardados se perderán.");
+        if (confirmar) {
+            window.location.href = "{{ url_for('ver_expediente', id=expediente.id) }}";
+        }
+    }
+
+    // Validación antes de enviar
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const nombres = document.getElementById('nombres').value.trim();
+        const apellidos = document.getElementById('apellidos').value.trim();
+
+        if (!nombres || !apellidos) {
+            e.preventDefault();
+            alert('⚠️ Los campos Nombres y Apellidos son obligatorios');
+        }
+    });
+</script>
+{% endblock %}

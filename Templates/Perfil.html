@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - UROMED</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header-perfil {
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-perfil h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header-perfil p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .btn-volver {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: white;
+            color: #2e7d32;
+            padding: 14px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 1.05em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        .btn-volver:hover {
+            background-color: #f1f8e9;
+            transform: translateX(-8px) scale(1.05);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+            color: #1b5e20;
+        }
+
+        .btn-volver::before {
+            content: "←";
+            font-size: 1.3em;
+            margin-right: 8px;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-volver:hover::before {
+            transform: translateX(-5px);
+        }
+
+        .contenido-perfil {
+            padding: 40px;
+        }
+
+        .seccion-principal {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid #e8f5e9;
+        }
+
+        .foto-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .foto-perfil {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background-color: #e8f5e9;
+            background-size: cover;
+            background-position: center;
+            border: 5px solid #4CAF50;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .foto-perfil:hover {
+            transform: scale(1.05);
+        }
+
+        .badge-rol {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .info-principal {
+            flex: 1;
+        }
+
+        .info-principal h2 {
+            color: #2e7d32;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0;
+            padding: 12px;
+            background-color: #f1f8e9;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background-color: #dcedc8;
+            transform: translateX(5px);
+        }
+
+        .info-item .icono {
+            font-size: 1.5em;
+            color: #4CAF50;
+        }
+
+        .info-item .label {
+            font-weight: 600;
+            color: #2e7d32;
+            min-width: 80px;
+        }
+
+        .info-item .valor {
+            color: #555;
+        }
+
+        .seccion-recordatorio {
+            background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .seccion-recordatorio h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recordatorio-texto {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            color: #555;
+            line-height: 1.6;
+            min-height: 60px;
+            font-style: italic;
+        }
+
+        .secciones-edicion {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tarjeta-edicion {
+            background-color: #fafafa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .tarjeta-edicion:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .tarjeta-edicion h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nota-descripcion {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            resize: vertical;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        input[type="file"] {
+            border: 2px dashed #4CAF50;
+            background-color: #f1f8e9;
+            cursor: pointer;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-cerrar-sesion {
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-cerrar-sesion:hover {
+            box-shadow: 0 6px 20px rgba(229, 57, 53, 0.4);
+        }
+
+        form {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .seccion-principal {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .foto-container {
+                margin-bottom: 20px;
+            }
+
+            .secciones-edicion {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-volver {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="header-perfil">
+            <a href="{{ url_for('inicio') }}" class="btn-volver">Volver al inicio</a>
+            <h1>👤 Mi Perfil</h1>
+            <p>Gestiona tu información personal y preferencias</p>
+        </div>
+
+        <div class="contenido-perfil">
+            <!-- Sección Principal -->
+            <div class="seccion-principal">
+                <div class="foto-container">
+                    <div class="foto-perfil" style="background-image: url('{{ url_for('static', filename='perfiles/' + foto_perfil) }}');"></div>
+                    <div class="badge-rol">{{ rol }}</div>
+                </div>
+
+                <div class="info-principal">
+                    <h2>{{ usuario }}</h2>
+                    
+                    <div class="info-item">
+                        <span class="icono">👤</span>
+                        <span class="label">Usuario:</span>
+                        <span class="valor">{{ usuario }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="icono">📧</span>
+                        <span class="label">Correo:</span>
+                        <span class="valor">{{ correo }}</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="icono">🏥</span>
+                        <span class="label">Rol:</span>
+                        <span class="valor">{{ rol }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Recordatorio -->
+            <div class="seccion-recordatorio">
+                <h3>📝 Recordatorio Personal</h3>
+                <div class="recordatorio-texto">
+                    {{ descripcion if descripcion else 'No has añadido ningún recordatorio aún.' }}
+                </div>
+            </div>
+
+            <!-- Secciones de Edición -->
+            <div class="secciones-edicion">
+                <!-- Editar Recordatorio -->
+                <div class="tarjeta-edicion">
+                    <form action="{{ url_for('actualizar_descripcion') }}" method="POST">
+                        <h3>✏️ Editar Recordatorio</h3>
+                        <p class="nota-descripcion">Este espacio es tuyo. Escribe lo que consideres importante.</p>
+                        <textarea name="nueva_descripcion" placeholder="Escribe aquí tu recordatorio..." required>{{ descripcion }}</textarea>
+                        <button type="submit">💾 Guardar recordatorio</button>
+                    </form>
+                </div>
+
+                <!-- Subir Foto -->
+                <div class="tarjeta-edicion">
+                    <form action="{{ url_for('subir_foto') }}" method="POST" enctype="multipart/form-data">
+                        <h3>📷 Cambiar Foto de Perfil</h3>
+                        <p class="nota-descripcion">Selecciona una nueva imagen para tu perfil.</p>
+                        <input type="file" name="foto" accept="image/*" required>
+                        <button type="submit">📤 Subir foto</button>
+                    </form>
+                </div>
+
+                <!-- Modificar Correo -->
+                <div class="tarjeta-edicion">
+                    <form action="{{ url_for('actualizar_correo') }}" method="POST" onsubmit="return confirmarCorreo()">
+                        <h3>📧 Cambiar Correo</h3>
+                        <p class="nota-descripcion">Actualiza tu dirección de correo electrónico.</p>
+                        <input type="email" name="nuevo_correo" placeholder="nuevo@correo.com" required>
+                        <button type="submit">✉️ Actualizar correo</button>
+                    </form>
+                </div>
+
+                <!-- Modificar Contraseña -->
+                <div class="tarjeta-edicion">
+                    <form action="{{ url_for('actualizar_contrasena') }}" method="POST" onsubmit="return confirmarContrasena()">
+                        <h3>🔒 Cambiar Contraseña</h3>
+                        <p class="nota-descripcion">Elige una contraseña segura para tu cuenta.</p>
+                        <input type="password" name="nueva_contrasena" placeholder="Nueva contraseña" required>
+                        <button type="submit">🔐 Actualizar contraseña</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Cerrar Sesión -->
+            <div style="margin-top: 40px; text-align: center;">
+                <form action="{{ url_for('logout') }}" method="GET">
+                    <button type="submit" class="btn-cerrar-sesion">🚪 Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmarCorreo() {
+            return confirm("¿Estás seguro de que deseas modificar tu correo electrónico?");
+        }
+
+        function confirmarContrasena() {
+            return confirm("¿Estás seguro de que deseas modificar tu contraseña?");
+        }
+    </script>
+</body>
+</html>

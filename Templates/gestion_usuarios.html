@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - UROMED</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        nav {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 1em;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background-color: #f1f8e9;
+        }
+
+        nav a:hover {
+            background-color: #c8e6c9;
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .boton-gestion {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            padding: 10px 24px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(255, 152, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .boton-gestion:hover {
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        main {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .bienvenida {
+            font-size: 1.5em;
+            color: #2e7d32;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .badge-superadmin {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* NUEVO: Panel de Control Super Admin */
+        .panel-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tarjeta-estadistica {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid #4CAF50;
+            transition: transform 0.3s ease;
+        }
+
+        .tarjeta-estadistica:hover {
+            transform: translateY(-5px);
+        }
+
+        .tarjeta-estadistica.superadmin {
+            border-left-color: #ff9800;
+        }
+
+        .tarjeta-estadistica h3 {
+            font-size: 2.5em;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .tarjeta-estadistica.superadmin h3 {
+            color: #ff9800;
+        }
+
+        .tarjeta-estadistica p {
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* Barra de Herramientas */
+        .barra-herramientas {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtro-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .filtro-select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .buscador-usuarios {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .buscador-usuarios input {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            min-width: 250px;
+        }
+
+        .buscador-usuarios input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn-buscar {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-buscar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Tabla de Usuarios */
+        .seccion-titulo {
+            color: #2e7d32;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tabla-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e8f5e9;
+        }
+
+        th {
+            background: linear-gradient(135deg, #4CAF50 0%, #66bb6a 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.05em;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges de Estado y Rol */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-activo {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .badge-inactivo {
+            background: #e53935;
+            color: white;
+        }
+
+        .badge-superadmin-rol {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .badge-doctor {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+
+        .badge-enfermero {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .badge-asistente {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+        }
+
+        /* Avatar de Usuario */
+        .avatar-usuario {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            border: 2px solid #4CAF50;
+        }
+
+        .info-usuario {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nombre-usuario {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .email-usuario {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        /* Botones de Acción */
+        .acciones-usuario {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-accion {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-activar {
+            background: linear-gradient(135deg, #4CAF50, #66bb6a);
+            color: white;
+        }
+
+        .btn-activar:hover {
+            background: linear-gradient(135deg, #388E3C, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-desactivar {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-desactivar:hover {
+            background: linear-gradient(135deg, #f57c00, #e65100);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-eliminar {
+            background: linear-gradient(135deg, #e53935, #c62828);
+            color: white;
+        }
+
+        .btn-eliminar:hover {
+            background: linear-gradient(135deg, #c62828, #b71c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-editar {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn-editar:hover {
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Mensajes de Estado */
+        .mensaje-estado {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mensaje-exito {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .mensaje-error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #e53935;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            text-align: center;
+            padding: 20px;
+            font-size: 0.95em;
+            color: #2e7d32;
+            margin-top: 50px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .barra-herramientas {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filtros {
+                justify-content: center;
+            }
+
+            .buscador-usuarios {
+                width: 100%;
+            }
+
+            .buscador-usuarios input {
+                min-width: auto;
+                flex: 1;
+            }
+
+            .acciones-usuario {
+                flex-direction: column;
+            }
+
+            .btn-accion {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .panel-control {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>UROMED</h1>
+        <p>Gestión de Usuarios - Panel de Administración</p>
+    </header>
+
+    <nav>
+        <a href="{{ url_for('inicio') }}">🏠 Inicio</a>
+        <a href="{{ url_for('crear_expediente') }}">📝 Crear expediente</a>
+        <a href="{{ url_for('historial') }}">📋 Historial</a>
+        <a href="{{ url_for('perfil') }}">👤 Mi perfil</a>
+        <a href="{{ url_for('gestion_usuarios') }}" class="boton-gestion">👥 Gestión Usuarios</a>
+    </nav>
+
+    <main>
+        <div class="bienvenida">
+            👑 Panel de Administración - <strong>{{ usuario }}</strong>
+            <span class="badge-superadmin">Super Administrador</span>
+        </div>
+
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mensaje-estado mensaje-{{ 'exito' if category == 'success' else 'error' }}">
+                        {% if category == 'success' %}
+                            ✅ 
+                        {% else %}
+                            ❌ 
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Panel de Control -->
+        <div class="panel-control">
+            <div class="tarjeta-estadistica">
+                <h3>{{ usuarios|length }}</h3>
+                <p>👥 Total de Usuarios</p>
+            </div>
+            <div class="tarjeta-estadistica">
+                <h3>{{ usuarios|selectattr('4', 'equalto', 1)|list|length }}</h3>
+                <p>✅ Usuarios Activos</p>
+            </div>
+            <div class="tarjeta-estadistica">
+                <h3>{{ usuarios|selectattr('3', 'equalto', 'Super Administrador')|list|length }}</h3>
+                <p>👑 Super Administradores</p>
+            </div>
+            <div class="tarjeta-estadistica superadmin">
+                <h3>{{ usuarios|selectattr('4', 'equalto', 0)|list|length }}</h3>
+                <p>⏸️ Usuarios Inactivos</p>
+            </div>
+        </div>
+
+        <!-- Barra de Herramientas -->
+        <div class="barra-herramientas">
+            <div class="filtros">
+                <select class="filtro-select" id="filtro-rol">
+                    <option value="">👥 Todos los roles</option>
+                    <option value="Super Administrador">👑 Super Administrador</option>
+                    <option value="doctor">👨‍⚕️ Doctor</option>
+                    <option value="enfermero">👩‍⚕️ Enfermer@</option>
+                    <option value="asistente">👤 Asistente</option>
+                </select>
+
+                <select class="filtro-select" id="filtro-estado">
+                    <option value="">📊 Todos los estados</option>
+                    <option value="activo">✅ Activos</option>
+                    <option value="inactivo">⏸️ Inactivos</option>
+                </select>
+            </div>
+
+            <div class="buscador-usuarios">
+                <input type="text" id="buscador" placeholder="🔍 Buscar usuario...">
+                <button class="btn-buscar" onclick="filtrarUsuarios()">Buscar</button>
+            </div>
+        </div>
+
+        <!-- Tabla de Usuarios -->
+        <h2 class="seccion-titulo">
+            <span>📋</span>
+            Lista de Usuarios del Sistema
+        </h2>
+
+        <div class="tabla-container">
+            <table id="tabla-usuarios">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Fecha Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr class="fila-usuario" 
+                        data-rol="{{ usuario[3] }}" 
+                        data-estado="{{ 'activo' if usuario[4] == 1 else 'inactivo' }}"
+                        data-nombre="{{ usuario[1] | lower }}"
+                        data-email="{{ usuario[2] | lower }}">
+                        <td>
+                            <div class="avatar-usuario">
+                                <div class="avatar-img">
+                                    {% if usuario[7] %}
+                                        <img src="{{ url_for('static', filename='perfiles/' + usuario[7]) }}" 
+                                             alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%;">
+                                    {% else %}
+                                        👤
+                                    {% endif %}
+                                </div>
+                                <div class="info-usuario">
+                                    <span class="nombre-usuario">{{ usuario[1] }}</span>
+                                    <span class="email-usuario">{{ usuario[2] }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if usuario[3] == 'Super Administrador' %}
+                                <span class="badge badge-superadmin-rol">👑 {{ usuario[3] }}</span>
+                            {% elif usuario[3] == 'doctor' %}
+                                <span class="badge badge-doctor">👨‍⚕️ {{ usuario[3] }}</span>
+                            {% elif usuario[3] == 'enfermero' %}
+                                <span class="badge badge-enfermero">👩‍⚕️ {{ usuario[3] }}</span>
+                            {% else %}
+                                <span class="badge badge-asistente">👤 {{ usuario[3] }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if usuario[4] == 1 %}
+                                <span class="badge badge-activo">✅ Activo</span>
+                            {% else %}
+                                <span class="badge badge-inactivo">⏸️ Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small style="color: #666;">
+                                {{ usuario[5].strftime('%d/%m/%Y') if usuario[5] else 'N/A' }}
+                            </small>
+                        </td>
+                        <td>
+                            <div class="acciones-usuario">
+                                {% if usuario[4] == 1 %}
+                                    <a href="{{ url_for('desactivar_usuario', usuario_id=usuario[0]) }}" 
+                                       class="btn-accion btn-desactivar"
+                                       onclick="return confirmarDesactivacion('{{ usuario[1] }}')">
+                                        ⏸️ Desactivar
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('activar_usuario', usuario_id=usuario[0]) }}" 
+                                       class="btn-accion btn-activar">
+                                        ✅ Activar
+                                    </a>
+                                {% endif %}
+                                
+                                {% if usuario[3] != 'Super Administrador' or usuario[0] != session.get('usuario_id') %}
+                                    <a href="{{ url_for('eliminar_usuario', usuario_id=usuario[0]) }}" 
+                                       class="btn-accion btn-eliminar"
+                                       onclick="return confirmarEliminacion('{{ usuario[1] }}')">
+                                        🗑️ Eliminar
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 UROMED - Sistema de Gestión Médica con Inteligencia Artificial
+    </footer>
+
+    <script>
+        // Confirmaciones para acciones
+        function confirmarEliminacion(nombreUsuario) {
+            return confirm(`⚠️ ¿ESTÁS SEGURO DE ELIMINAR A "${nombreUsuario}"?\n\nEsta acción NO se puede deshacer y se perderán todos los datos asociados.`);
+        }
+
+        function confirmarDesactivacion(nombreUsuario) {
+            return confirm(`¿Desactivar a "${nombreUsuario}"?\n\nEl usuario no podrá iniciar sesión pero se mantendrá en el sistema.`);
+        }
+
+        // Filtrado de usuarios
+        function filtrarUsuarios() {
+            const filtroRol = document.getElementById('filtro-rol').value;
+            const filtroEstado = document.getElementById('filtro-estado').value;
+            const textoBusqueda = document.getElementById('buscador').value.toLowerCase();
+            
+            const filas = document.querySelectorAll('.fila-usuario');
+            
+            filas.forEach(fila => {
+                const rol = fila.getAttribute('data-rol');
+                const estado = fila.getAttribute('data-estado');
+                const nombre = fila.getAttribute('data-nombre');
+                const email = fila.getAttribute('data-email');
+                
+                let mostrar = true;
+                
+                // Filtro por rol
+                if (filtroRol && rol !== filtroRol) {
+                    mostrar = false;
+                }
+                
+                // Filtro por estado
+                if (filtroEstado && estado !== filtroEstado) {
+                    mostrar = false;
+                }
+                
+                // Filtro por búsqueda
+                if (textoBusqueda && !nombre.includes(textoBusqueda) && !email.includes(textoBusqueda)) {
+                    mostrar = false;
+                }
+                
+                fila.style.display = mostrar ? '' : 'none';
+            });
+        }
+
+        // Event listeners para filtros en tiempo real
+        document.getElementById('filtro-rol').addEventListener('change', filtrarUsuarios);
+        document.getElementById('filtro-estado').addEventListener('change', filtrarUsuarios);
+        document.getElementById('buscador').addEventListener('input', filtrarUsuarios);
+
+        // Auto-focus en el buscador
+        document.getElementById('buscador').focus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Historial de Expedientes{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .historial-titulo {
+        color: #2e7d32;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 1.8em;
+    }
+
+    .filtro-form {
+        background: #dcedc8;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .filtros-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filtros-container input[type="text"],
+    .filtros-container input[type="date"] {
+        padding: 10px;
+        border: 1px solid #a5d6a7;
+        border-radius: 4px;
+        font-family: 'Segoe UI', sans-serif;
+        background-color: white;
+    }
+
+    .filtros-container input[type="text"] {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .filtros-fecha {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .filtros-fecha label {
+        color: #2e7d32;
+        font-weight: bold;
+    }
+
+    .btn-filtrar, .btn-limpiar {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .btn-filtrar {
+        background: #66bb6a;
+        color: white;
+    }
+
+    .btn-filtrar:hover {
+        background: #4caf50;
+        box-shadow: 0 2px 6px rgba(76,175,80,0.3);
+    }
+
+    .btn-limpiar {
+        background: #81c784;
+        color: white;
+    }
+
+    .btn-limpiar:hover {
+        background: #66bb6a;
+    }
+
+    .resumen-clinico {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: #dcedc8;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.05);
+        text-align: center;
+        border-left: 4px solid #66bb6a;
+    }
+
+    .stat-card h3 {
+        font-size: 2.5em;
+        color: #2e7d32;
+        margin: 0 0 10px 0;
+    }
+
+    .stat-card p {
+        color: #558b2f;
+        margin: 0;
+        font-weight: bold;
+    }
+
+    .tabla-container {
+        background: white;
+        border-radius: 8px;
+        overflow-x: auto;
+        box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .tabla-expedientes {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .tabla-expedientes thead {
+        background: #81c784;
+        color: white;
+    }
+
+    .tabla-expedientes th,
+    .tabla-expedientes td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #c8e6c9;
+    }
+
+    .tabla-expedientes tbody tr:hover {
+        background: #f1f8e9;
+    }
+
+    .tabla-expedientes tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .no-resultados {
+        text-align: center;
+        color: #689f38;
+        font-style: italic;
+        padding: 40px !important;
+    }
+
+    .btn-ver, .btn-editar {
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.9em;
+        margin-right: 5px;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .btn-ver {
+        background: #66bb6a;
+        color: white;
+    }
+
+    .btn-ver:hover {
+        background: #4caf50;
+    }
+
+    .btn-editar {
+        background: #fdd835;
+        color: #000;
+    }
+
+    .btn-editar:hover {
+        background: #fbc02d;
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<section class="historial">
+    <h2 class="historial-titulo">📋 Historial de Expedientes</h2>
+
+    <!-- Formulario de búsqueda y filtros -->
+    <form method="get" action="{{ url_for('historial') }}" class="filtro-form">
+        <div class="filtros-container">
+            <input type="text" name="buscar" placeholder="Buscar por nombre o enfermedad" value="{{ buscar or '' }}">
+            
+            <div class="filtros-fecha">
+                <label for="fecha_desde">Desde:</label>
+                <input type="date" name="fecha_desde" id="fecha_desde" value="{{ fecha_desde or '' }}">
+
+                <label for="fecha_hasta">Hasta:</label>
+                <input type="date" name="fecha_hasta" id="fecha_hasta" value="{{ fecha_hasta or '' }}">
+            </div>
+
+            <button type="submit" class="btn-filtrar">🔍 Filtrar</button>
+            <a href="{{ url_for('historial') }}" class="btn-limpiar">🔄 Limpiar filtros</a>
+        </div>
+    </form>
+
+    <!-- Resumen estadístico -->
+    <div class="resumen-clinico">
+        <div class="stat-card">
+            <h3>{{ total_expedientes }}</h3>
+            <p>Total de expedientes</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ expedientes_semana }}</h3>
+            <p>Últimos 7 días</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ expedientes_mes }}</h3>
+            <p>Último mes</p>
+        </div>
+    </div>
+
+    <!-- Tabla de expedientes -->
+    <div class="tabla-container">
+        <table class="tabla-expedientes">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Edad</th>
+                    <th>Enfermedad</th>
+                    <th>Fecha de Creación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if expedientes %}
+                    {% for expediente in expedientes %}
+                    <tr>
+                        <td>{{ expediente[0] }}</td>
+                        <td>{{ expediente[1] }} {{ expediente[2] }}</td>
+                        <td>{{ expediente[3] }}</td>
+                        <td>{{ expediente[4] }}</td>
+                        <td>
+                            {% if expediente[5] %}
+                                {{ expediente[5].strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('ver_expediente', id=expediente[0]) }}" class="btn-ver">👁️ Ver</a>
+                            <a href="{{ url_for('modificar_expediente', id=expediente[0]) }}" class="btn-editar">✏️ Editar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="no-resultados">
+                            ℹ️ No se encontraron expedientes para los filtros aplicados.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

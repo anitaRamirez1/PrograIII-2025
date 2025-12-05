@@ -1,0 +1,433 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Expediente del Paciente{% endblock %}
+
+{% block estilos_extra %}
+<style>
+    .container-expediente {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-expediente {
+        background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .header-expediente h1 {
+        font-size: 2em;
+        margin: 0 0 10px 0;
+        font-weight: 700;
+    }
+
+    .header-expediente .id-expediente {
+        background: rgba(255,255,255,0.2);
+        padding: 8px 20px;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.95em;
+        backdrop-filter: blur(10px);
+    }
+
+    .contenido-expediente {
+        background: white;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .layout-expediente {
+        display: grid;
+        grid-template-columns: 450px 1fr;
+        gap: 0;
+        min-height: 400px;
+    }
+
+    /* Sidebar con foto */
+    .sidebar-foto {
+        background: linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%);
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        border-right: 2px solid #e8f5e9;
+    }
+
+    .foto-paciente {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 350px;
+        border-radius: 15px;
+        background-color: white;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 4px solid #4CAF50;
+        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        margin-bottom: 20px;
+    }
+
+    .foto-paciente.sin-imagen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5em;
+        color: #81c784;
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        min-height: 350px;
+    }
+    
+    .foto-paciente img {
+        width: 100%;
+        height: auto;
+        border-radius: 11px;
+        display: block;
+    }
+
+    .etiqueta-foto {
+        color: #2e7d32;
+        font-weight: 600;
+        font-size: 0.9em;
+        text-align: center;
+        line-height: 1.4;
+    }
+
+    /* Contenido principal */
+    .datos-expediente {
+        padding: 40px;
+    }
+
+    .seccion-datos {
+        margin-bottom: 35px;
+    }
+
+    .seccion-titulo {
+        color: #2e7d32;
+        font-size: 1.3em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8f5e9;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+    }
+
+    .grid-datos {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .campo-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #4CAF50;
+        transition: all 0.3s ease;
+    }
+
+    .campo-info:hover {
+        background: #f1f8e9;
+        transform: translateX(5px);
+    }
+
+    .campo-info .label {
+        font-size: 0.85em;
+        color: #689f38;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+
+    .campo-info .valor {
+        font-size: 1.05em;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .campo-info .valor.vacio {
+        color: #999;
+        font-style: italic;
+    }
+
+    /* Campo de enfermedad (ocupa ancho completo) */
+    .campo-enfermedad {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 5px solid #4CAF50;
+    }
+
+    .campo-enfermedad .label {
+        font-size: 1em;
+        color: #2e7d32;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .campo-enfermedad .valor {
+        font-size: 1.05em;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    /* Botones de acción */
+    .acciones-expediente {
+        display: flex;
+        gap: 15px;
+        padding: 30px 40px;
+        background: #fafafa;
+        border-top: 2px solid #e8f5e9;
+        justify-content: center;
+    }
+
+    .btn-accion {
+        padding: 14px 35px;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.05em;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-modificar {
+        background: linear-gradient(135deg, #fdd835 0%, #f9a825 100%);
+        color: #000;
+    }
+
+    .btn-modificar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(253, 216, 53, 0.4);
+    }
+
+    .btn-volver {
+        background: linear-gradient(135deg, #66bb6a 0%, #4CAF50 100%);
+        color: white;
+    }
+
+    .btn-volver:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-eliminar {
+        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+        color: white;
+    }
+
+    .btn-eliminar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(229, 57, 53, 0.4);
+    }
+
+    /* Badge de estado */
+    .badge-activo {
+        background: #4CAF50;
+        color: white;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: 600;
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .layout-expediente {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar-foto {
+            border-right: none;
+            border-bottom: 2px solid #e8f5e9;
+        }
+
+        .grid-datos {
+            grid-template-columns: 1fr;
+        }
+
+        .acciones-expediente {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .btn-accion {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container-expediente">
+    <!-- Header del expediente -->
+    <div class="header-expediente">
+        <h1>📋 {{ expediente.nombres }} {{ expediente.apellidos }}</h1>
+        <span class="id-expediente">ID: #{{ expediente.id }}</span>
+        <span class="badge-activo">✓ Activo</span>
+    </div>
+
+    <!-- Contenido del expediente -->
+    <div class="contenido-expediente">
+        <div class="layout-expediente">
+            <!-- Sidebar con foto -->
+            <div class="sidebar-foto">
+                {% if expediente.imagen %}
+                    <div class="foto-paciente">
+                        <img src="{{ url_for('static', filename='uploads/' ~ expediente.imagen) }}" alt="Imagen médica">
+                    </div>
+                    <p class="etiqueta-foto">📷 Imagen Médica / Diagnóstico</p>
+                {% else %}
+                    <div class="foto-paciente sin-imagen">🏥</div>
+                    <p class="etiqueta-foto">Sin imagen médica</p>
+                {% endif %}
+            </div>
+
+            <!-- Datos del expediente -->
+            <div class="datos-expediente">
+                <!-- Sección: Información Personal -->
+                <div class="seccion-datos">
+                    <h3 class="seccion-titulo">
+                        <span>👤</span>
+                        Información Personal
+                    </h3>
+                    <div class="grid-datos">
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>📝</span>
+                                Nombres
+                            </div>
+                            <div class="valor">{{ expediente.nombres }}</div>
+                        </div>
+
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>📝</span>
+                                Apellidos
+                            </div>
+                            <div class="valor">{{ expediente.apellidos }}</div>
+                        </div>
+
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>🎂</span>
+                                Edad
+                            </div>
+                            <div class="valor {% if not expediente.edad %}vacio{% endif %}">
+                                {{ expediente.edad if expediente.edad else 'No especificada' }}
+                            </div>
+                        </div>
+
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>📱</span>
+                                Teléfono
+                            </div>
+                            <div class="valor {% if not expediente.telefono %}vacio{% endif %}">
+                                {{ expediente.telefono if expediente.telefono else 'No especificado' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección: Información de Contacto -->
+                <div class="seccion-datos">
+                    <h3 class="seccion-titulo">
+                        <span>📬</span>
+                        Información de Contacto
+                    </h3>
+                    <div class="grid-datos">
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>📧</span>
+                                Correo Electrónico
+                            </div>
+                            <div class="valor {% if not expediente.correo %}vacio{% endif %}">
+                                {{ expediente.correo if expediente.correo else 'No especificado' }}
+                            </div>
+                        </div>
+
+                        <div class="campo-info">
+                            <div class="label">
+                                <span>🏠</span>
+                                Dirección
+                            </div>
+                            <div class="valor {% if not expediente.direccion %}vacio{% endif %}">
+                                {{ expediente.direccion if expediente.direccion else 'No especificada' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección: Información Médica -->
+                <div class="seccion-datos">
+                    <h3 class="seccion-titulo">
+                        <span>🏥</span>
+                        Información Médica
+                    </h3>
+                    <div class="grid-datos">
+                        <div class="campo-enfermedad">
+                            <div class="label">
+                                <span>🩺</span>
+                                Diagnóstico / Enfermedad
+                            </div>
+                            <div class="valor {% if not expediente.enfermedad %}vacio{% endif %}">
+                                {{ expediente.enfermedad if expediente.enfermedad else 'Sin diagnóstico registrado' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="acciones-expediente">
+            <a href="{{ url_for('modificar_expediente', id=expediente.id) }}" class="btn-accion btn-modificar">
+                <span>✏️</span>
+                Modificar Expediente
+            </a>
+            <a href="{{ url_for('inicio') }}" class="btn-accion btn-volver">
+                <span>←</span>
+                Volver al Inicio
+            </a>
+            <button class="btn-accion btn-eliminar" onclick="confirmarEliminar()">
+                <span>🗑️</span>
+                Eliminar Expediente
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarEliminar() {
+        const confirmar = confirm("⚠️ ¿Estás seguro de que deseas eliminar este expediente?\n\nEsta acción no se puede deshacer.");
+        if (confirmar) {
+            window.location.href = "{{ url_for('eliminar_expediente', id=expediente.id) }}";
+        }
+    }
+</script>
+{% endblock %}

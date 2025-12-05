@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Restringido - UROMED</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #f0fdf4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container-verificacion {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            border-top: 5px solid #4CAF50;
+        }
+
+        .icono-seguridad {
+            text-align: center;
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #689f38;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+
+        .alerta-seguridad {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alerta-seguridad .icono {
+            font-size: 1.5em;
+        }
+
+        .alerta-seguridad .texto {
+            font-size: 0.9em;
+            color: #e65100;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .input-codigo {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .input-codigo:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn-verificar {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-verificar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-volver {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-volver:hover {
+            background: #f1f8e9;
+        }
+
+        .error-mensaje {
+            background: #ffebee;
+            border-left: 4px solid #e53935;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #c62828;
+            display: none;
+            animation: shake 0.5s;
+        }
+
+        .error-mensaje.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .info-adicional {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f1f8e9;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .info-adicional p {
+            color: #558b2f;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-adicional strong {
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-verificacion">
+        <div class="icono-seguridad">🔒</div>
+        
+        <h1>Acceso Restringido</h1>
+        <p class="subtitulo">Solo personal autorizado de UROMED</p>
+
+        <div class="alerta-seguridad">
+            <span class="icono">⚠️</span>
+            <div class="texto">
+                <strong>Área de acceso restringido.</strong> Se requiere un código de autorización válido para crear nuevas cuentas de usuario.
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="error-mensaje show">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('verificar_codigo_acceso') }}">
+            <div class="form-group">
+                <label for="codigo">🔑 Código de Acceso</label>
+                <input 
+                    type="text" 
+                    id="codigo" 
+                    name="codigo" 
+                    class="input-codigo" 
+                    placeholder="Ingrese el código"
+                    required
+                    autocomplete="off"
+                    maxlength="50">
+            </div>
+
+            <button type="submit" class="btn-verificar">
+                ✓ Verificar Código
+            </button>
+        </form>
+
+        <button class="btn-volver" onclick="window.location.href='{{ url_for('login') }}'">
+            ← Volver al inicio de sesión
+        </button>
+
+        <div class="info-adicional">
+            <p>
+                <strong>💡 Nota:</strong> Si eres personal autorizado y no conoces el código de acceso, contacta al administrador del sistema o al doctor a cargo de la clínica.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Convertir automáticamente a mayúsculas mientras escribe
+        document.getElementById('codigo').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // Prevenir copiar/pegar para mayor seguridad (opcional)
+        document.getElementById('codigo').addEventListener('paste', function(e) {
+            e.preventDefault();
+            alert('⚠️ Por seguridad, no se permite pegar texto en este campo.');
+        });
+    </script>
+</body>
+</html>
