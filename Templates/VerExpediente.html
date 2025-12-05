@@ -406,18 +406,26 @@
 
         <!-- Botones de acción -->
         <div class="acciones-expediente">
+            <!-- 🔐 MODIFICADO: Modificar - Para Super Admin, Doctor y Enfermero -->
+            {% if session.get('rol') in ['Super Administrador', 'doctor', 'enfermero'] %}
             <a href="{{ url_for('modificar_expediente', id=expediente.id) }}" class="btn-accion btn-modificar">
                 <span>✏️</span>
                 Modificar Expediente
             </a>
+            {% endif %}
+            
             <a href="{{ url_for('inicio') }}" class="btn-accion btn-volver">
                 <span>←</span>
                 Volver al Inicio
             </a>
+            
+            <!-- 🔐 MODIFICADO: Eliminar - Solo para Super Admin y Doctor -->
+            {% if session.get('rol') in ['Super Administrador', 'doctor'] %}
             <button class="btn-accion btn-eliminar" onclick="confirmarEliminar()">
                 <span>🗑️</span>
                 Eliminar Expediente
             </button>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -133,6 +133,18 @@
             cursor: pointer;
             color: #888;
         }
+
+        /* Mensaje de cuenta desactivada */
+        .mensaje-desactivado {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #ffeaa7;
+            font-size: 0.95em;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -140,6 +152,14 @@
         <div class="logo">UROMED</div>
         <div class="subtitle">Medico IA</div>
         <h2>INICIAR SESIÓN</h2>
+
+        <!-- ✅ Mensaje para cuenta desactivada -->
+        {% if mensaje_desactivado %}
+        <div class="mensaje-desactivado">
+            ⚠️ {{ mensaje_desactivado }}
+        </div>
+        {% endif %}
+
         <form action="{{ url_for('acceder') }}" method="POST">
             <label>Nombre de usuario:</label>
             <input type="text" name="username" required>

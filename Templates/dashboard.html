@@ -54,7 +54,7 @@
             background-color: #c8e6c9;
         }
 
-        /* NUEVO ESTILO: Botón de Gestión de Usuarios (Solo Super Admin) */
+        /* Botón de Gestión de Usuarios (Super Admin + Doctor) */
         .boton-gestion {
             background-color: #ff9800;
             padding: 8px 14px;
@@ -73,36 +73,21 @@
             box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
         }
 
+        /* Botón IA Diagnóstica (colores suaves UROMED) */
         .boton-ia {
-            background-color: #f8bbd0;
+            background: linear-gradient(135deg, #66bb6a, #81c784);
             padding: 8px 14px;
             border-radius: 6px;
-            color: #880e4f;
+            color: white;
             font-weight: bold;
             text-decoration: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .boton-ia::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
-            transition: left 0.5s ease;
         }
 
         .boton-ia:hover {
-            box-shadow: 0 0 12px rgba(248,187,208, 0.6);
-        }
-
-        .boton-ia:hover::after {
-            left: 100%;
+            box-shadow: 0 0 12px rgba(102, 187, 106, 0.6);
+            transform: translateY(-2px);
         }
 
         main {
@@ -118,9 +103,21 @@
             text-align: center;
         }
 
-        /* NUEVO: Indicador de rol Super Admin */
+        /* Indicador de rol Super Admin */
         .badge-superadmin {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        /* Indicador de rol Doctor */
+        .badge-doctor {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
             color: white;
             padding: 4px 12px;
             border-radius: 15px;
@@ -155,20 +152,26 @@
         <a href="{{ url_for('crear_expediente') }}">📝 Crear expediente</a>
         <a href="{{ url_for('historial') }}">📋 Historial</a>
         
-        <!-- NUEVO: Gestión de Usuarios - Solo visible para Super Administrador -->
-        {% if session.get('rol') == 'Super Administrador' %}
+        <!-- ✅ NORMALIZADO: Gestión de Usuarios - Para Super Admin Y doctor -->
+        {% if session.get('rol')|lower in ['super administrador', 'doctor'] %}
         <a href="{{ url_for('gestion_usuarios') }}" class="boton-gestion">👥 Gestión Usuarios</a>
         {% endif %}
         
         <a href="{{ url_for('perfil') }}">👤 Mi perfil</a>
-        <a href="#" class="boton-ia">🤖 IA Diagnóstica</a>
+        
+        <!-- ✅ IA Diagnóstica - Botón funcional -->
+        {% if session.get('rol')|lower in ['super administrador', 'doctor', 'enfermero'] %}
+        <a href="{{ url_for('ia_chat') }}" class="boton-ia">🤖 IA Diagnóstica</a>
+        {% endif %}
     </nav>
 
     {% if usuario and rol %}
         <div class="bienvenida">
             Bienvenido, {{ usuario }} 
-            {% if rol == 'Super Administrador' %}
+            {% if rol|lower == 'super administrador' %}
                 <span class="badge-superadmin">👑 {{ rol }}</span>
+            {% elif rol|lower == 'doctor' %}
+                <span class="badge-doctor">👨‍⚕️ {{ rol }}</span>
             {% else %}
                 ({{ rol }})
             {% endif %}

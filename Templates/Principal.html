@@ -64,7 +64,7 @@
             transform: translateY(-2px);
         }
 
-        /* NUEVO: Botón de Gestión de Usuarios */
+        /* Botón de Gestión de Usuarios */
         .boton-gestion {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
             padding: 10px 24px;
@@ -149,7 +149,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* NUEVO: Indicador de Super Admin */
+        /* Indicador de Super Admin */
         .badge-superadmin {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             color: white;
@@ -245,7 +245,7 @@
             background-color: #f1f8e9;
         }
 
-        /* NUEVO: Sección de estadísticas mejorada */
+        /* Sección de estadísticas mejorada */
         .estadisticas-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -449,19 +449,19 @@
         <a href="{{ url_for('crear_expediente') }}">📝 Crear expediente</a>
         <a href="{{ url_for('historial') }}">📋 Historial</a>
         
-        <!-- NUEVO: Gestión de Usuarios - Solo para Super Admin -->
-        {% if session.get('rol') == 'Super Administrador' %}
+        <!-- ✅ NORMALIZADO: Gestión de Usuarios - Para Super Admin Y Doctor -->
+        {% if session.get('rol')|lower in ['super administrador', 'doctor'] %}
         <a href="{{ url_for('gestion_usuarios') }}" class="boton-gestion">👥 Gestión Usuarios</a>
         {% endif %}
         
         <a href="{{ url_for('perfil') }}">👤 Mi perfil</a>
-        <a href="#" class="boton-ia">🤖 IA Diagnóstica</a>
+       <a href="{{ url_for('ia_chat') }}" class="boton-ia">🤖 IA Diagnóstica</a>
     </nav>
 
     <main>
         <div class="bienvenida">
             👋 Bienvenido, <strong>{{ usuario }}</strong> 
-            {% if rol == 'Super Administrador' %}
+            {% if rol|lower == 'super administrador' %}
                 <span class="badge-superadmin">👑 {{ rol }}</span>
             {% else %}
                 ({{ rol }})
@@ -476,7 +476,7 @@
             <ul class="sugerencias" style="display: none;"></ul>
         </form>
 
-        <!-- NUEVO: Grid de estadísticas mejorado -->
+        <!-- Grid de estadísticas mejorado -->
         <div class="estadisticas-grid">
             <div class="resumen">
                 <strong>📊 Resumen Clínico</strong>
@@ -485,11 +485,11 @@
                 <div class="resumen-item">⏳ 1 expediente pendiente de revisión</div>
             </div>
 
-            <!-- NUEVO: Panel de Gestión de Usuarios (Solo para Super Admin) -->
-            {% if session.get('rol') == 'Super Administrador' %}
+            <!-- ✅ NORMALIZADO: Panel de Gestión de Usuarios (Super Admin Y Doctor) -->
+            {% if session.get('rol')|lower in ['super administrador', 'doctor'] %}
             <div class="resumen-usuarios">
                 <strong>👥 Gestión del Sistema</strong>
-                <div class="resumen-item">🔐 Control total de usuarios</div>
+                <div class="resumen-item">🔐 Control de usuarios</div>
                 <div class="resumen-item">⚙️ Configuración del sistema</div>
                 <div class="resumen-item">📈 Estadísticas avanzadas</div>
                 <div class="resumen-accion">
@@ -525,9 +525,13 @@
                                 <a href="{{ url_for('ver_expediente', id=expediente[0]) }}">
                                     <button class="btn">👁️ Ver Expediente</button>
                                 </a>
+                                
+                                <!-- ✅ NORMALIZADO: Eliminar - Solo para Super Admin y Doctor -->
+                                {% if session.get('rol')|lower in ['super administrador', 'doctor'] %}
                                 <button class="btn btn-eliminar" onclick="confirmarEliminacion({{ expediente[0] | tojson }})">
                                     🗑️ Eliminar
                                 </button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

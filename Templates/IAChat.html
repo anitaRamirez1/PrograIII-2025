@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UROMED - IA Diagnóstica</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ia-chat.css') }}">
+</head>
+<body>
+    <header class="topbar" role="banner">
+    <div class="logo">UROMED</div>
+    <div class="subtitle">IA Diagnóstica con Análisis Real</div>
+    <div class="user-info">{{ session.get('username', 'Usuario') }} ({{ session.get('rol', 'Rol') }})</div>
+  </header>
+
+    <div class="back-bar">
+    <a href="{{ url_for('inicio') }}" class="btn-volver">← Volver al Inicio</a>
+  </div>
+
+    <main class="chat-layout" role="main">
+        <aside class="sidebar" aria-label="Historial de chats">
+      <button class="btn-nuevo" onclick="nuevoChat()">+ Nuevo chat</button>
+      
+            <button class="btn-debug" onclick="resetearEstadoChat()" style="display: none;">
+        🔄 Resetear Chats (Debug)
+      </button>
+      
+      <button class="btn-eliminar-chat" onclick="eliminarChatActual()">🗑️ Eliminar chat</button>
+      
+      <nav class="historial" id="historial" aria-label="Lista de chats">
+              </nav>
+
+            <div id="ctxMenu" class="ctx-menu" style="display:none" role="menu">
+        <div class="ctx-item" onclick="renombrarChat()" role="menuitem">✏️ Cambiar nombre</div>
+      </div>
+
+            <input id="renameInput" class="rename-input" style="display:none" 
+             aria-label="Nuevo nombre del chat" />
+    </aside>
+
+        <section class="chat-area" aria-label="Área de conversación">
+      <div class="mensajes" id="mensajes" role="log" aria-live="polite">
+                <div class="msg ia">
+          <div class="bubble">
+            <strong>👋 ¡Bienvenido al Sistema de IA Diagnóstica UROMED!</strong><br><br>
+            💡 <strong>Nuevas funcionalidades:</strong><br>
+            • <strong>Análisis automático</strong> al seleccionar expediente<br>
+            • <strong>Procesamiento de imágenes real</strong> (Estadísticas y Textura)<br>
+            • <strong>Chat inteligente</strong> con contexto médico<br><br>
+            🚀 <strong>Para comenzar:</strong> Selecciona un expediente en el menú desplegable.
+          </div>
+        </div>
+      </div>
+
+            <div id="panel-monai" class="panel-monai" style="display: none;">
+        <label for="selectAnalisis"><strong>🔍 Tipo de Análisis de Imagen:</strong></label>
+        <select id="selectAnalisis" class="select-analisis" aria-describedby="monai-help">
+          <option value="calculos_renales">Cálculos Renales</option>
+          <option value="prostata">Análisis Prostático</option>
+          <option value="vejiga">Evaluación de Vejiga</option>
+          <option value="general">Análisis General Urológico</option>
+        </select>
+        <small id="monai-help" class="monai-hint">
+          El sistema realiza un Análisis Estadístico y de Textura Real.
+        </small>
+      </div>
+
+      <form class="entrada" id="formEntrada" enctype="multipart/form-data" novalidate>
+        <div class="input-group">
+          <select id="selectExpediente" required aria-label="Seleccionar expediente" aria-describedby="expediente-help">
+            <option value="">Selecciona un expediente</option>
+            {% for exp in expedientes %}
+              <option value="{{ exp.id }}">{{ exp.nombres }} {{ exp.apellidos }} - {{ exp.enfermedad }}</option>
+            {% endfor %}
+          </select>
+          <small id="expediente-help" class="sr-only">Selecciona el expediente a consultar</small>
+        </div>
+
+        <label for="archivo" class="adjuntar" title="Adjuntar archivo" aria-label="Adjuntar archivo">
+          📎 <span class="sr-only">Adjuntar archivo</span>
+        </label>
+        <input type="file" id="archivo" name="archivo" accept="image/*,.pdf,.doc,.docx,.dcm,.nii,.nii.gz" 
+               style="display:none;" aria-hidden="true">
+
+        <input type="text" id="texto" name="texto" placeholder="Escribe tu mensaje o sube una imagen..." 
+               autocomplete="off" required aria-label="Escribir mensaje">
+
+        <button type="submit" aria-label="Enviar mensaje">➤</button>
+      </form>
+
+      <div id="preview" class="preview-box" style="display:none;" aria-live="polite"></div>
+    </section>
+  </main>
+
+    <div id="modalConfirm" class="modal-confirm" style="display:none;" role="dialog" aria-labledby="modalTitle">
+    <div class="modal-box">
+      <p id="modalTitle">¿Seguro de eliminar esta conversación?</p>
+      <div class="modal-buttons">
+        <button id="btnSi" class="btn-si" aria-label="Sí, eliminar chat">Sí</button>
+        <button id="btnNo" class="btn-no" aria-label="No, cancelar">No</button>
+      </div>
+    </div>
+  </div>
+
+      <div id="monai-loading-template" style="display: none;">
+    <div class="msg ia">
+      <div class="bubble monai-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Procesando imagen médica con Análisis Real...</div>
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <span class="sr-only">Procesando análisis de imagen en el servidor.</span>
+      </div>
+    </div>
+  </div>
+
+    <div id="analisis-expediente-template" style="display: none;">
+    <div class="msg ia">
+      <div class="bubble analisis-expediente">
+              </div>
+    </div>
+  </div>
+
+    <div id="typing-template" style="display: none;">
+    <div class="msg ia">
+      <div class="bubble typing">
+        Escribiendo<span class="typing-dots">...</span>
+      </div>
+      <span class="sr-only">La inteligencia artificial está escribiendo una respuesta.</span>
+    </div>
+  </div>
+
+    <div id="error-template" style="display: none;">
+    <div class="msg ia">
+      <div class="bubble error">⚠️ Lo siento, ha ocurrido un error. Intenta nuevamente.</div>
+    </div>
+  </div>
+
+    <div id="analizando-template" style="display: none;">
+    <div class="msg ia">
+      <div class="bubble analizando">
+        <div class="analizando-content">
+          <div class="analizando-spinner"></div>
+          <div class="analizando-text">🔍 Analizando expediente completo...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+    window.USUARIO_ID = {{ session['usuario_id'] }};
+    window.CHATS_PREVIOS = {{ chats_previos | tojson }};
+    
+    // Mostrar botón debug en desarrollo
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      document.querySelector('.btn-debug').style.display = 'block';
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/ia-chat.js') }}"></script>
+</body>
+</html>

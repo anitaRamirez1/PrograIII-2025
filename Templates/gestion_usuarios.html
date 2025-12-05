@@ -110,7 +110,19 @@
             vertical-align: middle;
         }
 
-        /* NUEVO: Panel de Control Super Admin */
+        .badge-doctor {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Panel de Control Super Admin */
         .panel-control {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -429,6 +441,30 @@
             border-left: 4px solid #e53935;
         }
 
+        /* Estilo para acceso denegado */
+        .acceso-denegado {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin: 50px auto;
+            max-width: 600px;
+        }
+
+        .acceso-denegado h2 {
+            color: #e53935;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .acceso-denegado p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
         footer {
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             text-align: center;
@@ -485,13 +521,36 @@
         <a href="{{ url_for('crear_expediente') }}">📝 Crear expediente</a>
         <a href="{{ url_for('historial') }}">📋 Historial</a>
         <a href="{{ url_for('perfil') }}">👤 Mi perfil</a>
+        
+        <!-- ✅ NORMALIZADO: Gestión Usuarios - Para Super Admin Y Doctor -->
+        {% if session.get('rol')|lower in ['super administrador', 'doctor'] %}
         <a href="{{ url_for('gestion_usuarios') }}" class="boton-gestion">👥 Gestión Usuarios</a>
+        {% endif %}
     </nav>
 
     <main>
+        <!-- ✅ NORMALIZADO: Verificación de permisos -->
+        {% if session.get('rol')|lower not in ['super administrador', 'doctor'] %}
+        <div class="acceso-denegado">
+            <div style="font-size: 4em; margin-bottom: 20px;">🚫</div>
+            <h2>Acceso Denegado</h2>
+            <p>No tienes permisos para acceder a la gestión de usuarios.<br>
+               Esta función está reservada para Super Administradores y Doctores.</p>
+            <a href="{{ url_for('inicio') }}" style="display: inline-block; padding: 12px 30px; background: #4CAF50; color: white; text-decoration: none; border-radius: 25px; font-weight: 600;">
+                ← Volver al Inicio
+            </a>
+        </div>
+        
+        {% else %}
+        
+        <!-- CONTENIDO PARA USUARIOS AUTORIZADOS -->
         <div class="bienvenida">
             👑 Panel de Administración - <strong>{{ usuario }}</strong>
-            <span class="badge-superadmin">Super Administrador</span>
+            {% if session.get('rol')|lower == 'super administrador' %}
+                <span class="badge-superadmin">👑 {{ session.get('rol') }}</span>
+            {% elif session.get('rol')|lower == 'doctor' %}
+                <span class="badge-doctor">👨‍⚕️ {{ session.get('rol') }}</span>
+            {% endif %}
         </div>
 
         <!-- Mensajes Flash -->
@@ -536,7 +595,7 @@
                 <select class="filtro-select" id="filtro-rol">
                     <option value="">👥 Todos los roles</option>
                     <option value="Super Administrador">👑 Super Administrador</option>
-                    <option value="doctor">👨‍⚕️ Doctor</option>
+                    <option value="Doctor">👨‍⚕️ Doctor</option>
                     <option value="enfermero">👩‍⚕️ Enfermer@</option>
                     <option value="asistente">👤 Asistente</option>
                 </select>
@@ -597,7 +656,7 @@
                         <td>
                             {% if usuario[3] == 'Super Administrador' %}
                                 <span class="badge badge-superadmin-rol">👑 {{ usuario[3] }}</span>
-                            {% elif usuario[3] == 'doctor' %}
+                            {% elif usuario[3] == 'Doctor' %}
                                 <span class="badge badge-doctor">👨‍⚕️ {{ usuario[3] }}</span>
                             {% elif usuario[3] == 'enfermero' %}
                                 <span class="badge badge-enfermero">👩‍⚕️ {{ usuario[3] }}</span>
@@ -646,6 +705,8 @@
                 </tbody>
             </table>
         </div>
+        
+        {% endif %} <!-- Cierre del bloque de verificación de permisos -->
     </main>
 
     <footer>
